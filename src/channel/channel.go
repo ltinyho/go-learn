@@ -15,8 +15,9 @@ type Book struct {
 }
 
 func main() {
-	singleChannel()
-	testSelect()
+	//singleChannel()
+	//testSelect()
+	closeChannel()
 	//testArrayCopy()
 	//channelCopy()
 }
@@ -101,4 +102,26 @@ func testSelect() {
 		}
 	}
 	time.Sleep(time.Hour)
+}
+
+func closeChannel() {
+	ch1 := make(chan int)
+	go func() {
+	loop:
+		for {
+			select {
+			case _, ok := <-ch1:
+				if !ok {
+					fmt.Println(1)
+					ch1 = make(chan int) // 阻塞关闭的channel
+					break loop           // 跳出外层循环
+				}
+			}
+		}
+	}()
+	for i := 0; i < 100; i++ {
+		ch1 <- i
+	}
+	close(ch1)
+	time.Sleep(time.Second)
 }
