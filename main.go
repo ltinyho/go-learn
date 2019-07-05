@@ -65,6 +65,7 @@ func (l *Lock) exec(fn func() error) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println(ttl)
 }
 
 func main() {

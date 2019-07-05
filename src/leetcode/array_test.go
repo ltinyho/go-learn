@@ -53,3 +53,9 @@ func TestMergeArray(t *testing.T) {
 	res := mergeArray(arr1, arr2, len(arr1), len(arr2))
 	fmt.Println(res)
 }
+func TestContainsNearbyDuplicate(t *testing.T) {
+	res := ContainsNearbyDuplicate([]int{1, 0, 1, 1}, 1)
+	if !res {
+		t.Failed()
+	}
+}

@@ -151,6 +151,7 @@ func PlusOne(nums []int) []int {
 
 	return nums
 }
+
 // 有序数组合并
 func mergeArray(nums1, nums2 []int, m, n int) []int {
 	//扩容
@@ -166,4 +167,16 @@ func mergeArray(nums1, nums2 []int, m, n int) []int {
 		}
 	}
 	return nums1
+}
+func ContainsNearbyDuplicate(nums []int, k int) bool {
+	existMap := map[int]int{}
+	for key, val := range nums {
+		mapVal, ok := existMap[val]
+		if ok && (key-mapVal) <= k {
+			return true
+		}
+
+		existMap[val] = key
+	}
+	return false
 }
