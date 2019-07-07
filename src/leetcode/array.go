@@ -180,3 +180,28 @@ func ContainsNearbyDuplicate(nums []int, k int) bool {
 	}
 	return false
 }
+
+func FlipAndInvertImage(A [][]int) [][]int {
+	for i := 0; i < len(A); i++ {
+		A[i] = flipNums(A[i])
+	}
+	for i := 0; i < len(A); i++ {
+		for j := 0; j < len(A[i]); j++ {
+			A[i][j] ^= 1
+		}
+	}
+	return A
+}
+
+func flipNums(a []int) []int {
+	i := 0
+	j := len(a) - 1
+	for i < j {
+		temp := a[i]
+		a[i] = a[j]
+		a[j] = temp
+		i++
+		j--
+	}
+	return a
+}

@@ -14,5 +14,17 @@ func TestError(t *testing.T) {
 	case CacheError:
 		fmt.Println(err.Error())
 	}
-	os.IsExist()
+	os.IsExist(err)
+}
+
+func TestDefer(t *testing.T) {
+	defer func() {
+		if p := recover(); p != nil {
+			fmt.Println("panic", p)
+		}
+	}()
+	var a uint
+	a = 0
+	a = ^a
+	fmt.Println(a)
 }

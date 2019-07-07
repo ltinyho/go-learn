@@ -59,3 +59,17 @@ func TestContainsNearbyDuplicate(t *testing.T) {
 		t.Failed()
 	}
 }
+
+func TestInvertNum(t *testing.T) {
+	res := flipNums([]int{1, 0, 1})
+	fmt.Println(res)
+}
+
+func TestFlipAndInvertImage(t *testing.T) {
+	res := FlipAndInvertImage([][]int{
+		{1, 1, 0},
+		{1, 0, 1},
+		{0, 0, 0},
+	})
+	fmt.Println(res)
+}
