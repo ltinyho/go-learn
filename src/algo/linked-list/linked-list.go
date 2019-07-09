@@ -30,16 +30,13 @@ func NewLinkedList() *LinkedList {
 
 // 在某个节点前插入节点, 返回是否插入成功
 func (this *LinkedList) InsertBefore(p *LinkNode, v interface{}) bool {
-	if p == nil || p == this.head {
-		return false
-	}
 	prev := this.head
 	cur := prev.next
 	for cur != nil {
 		if cur == p {
-			node := NewLinkNode(v)
-			node.next = cur
-			prev.next = node
+			newNode := NewLinkNode(v)
+			prev.next = newNode
+			newNode.next = p
 			this.length++
 			return true
 		}
@@ -54,9 +51,9 @@ func (this *LinkedList) InsertAfter(p *LinkNode, v interface{}) bool {
 	if p == nil {
 		return false
 	}
-	node := NewLinkNode(v)
-	node.next = p.next
-	p.next = node
+	newNode := NewLinkNode(v)
+	newNode.next = p.next
+	p.next = newNode
 	this.length++
 	return true
 }
@@ -70,30 +67,32 @@ func (this *LinkedList) InsertToTail(v interface{}) bool {
 	for cur != nil && cur.next != nil {
 		cur = cur.next
 	}
-	cur.next = NewLinkNode(v)
+	newNode := NewLinkNode(v)
+	cur.next = newNode
 	this.length++
 	return true
 }
 
 func (this *LinkedList) FindByIndex(i uint) *LinkNode {
-	if i >= this.length {
-		return nil
-	}
-	var curIdx uint = 0
+	var idx uint = 0
 	cur := this.head.next
-	for ; curIdx < i; curIdx++ {
+	for idx < i {
 		cur = cur.next
+		idx++
 	}
 	return cur
 }
 
 func (this *LinkedList) DeleteNode(p *LinkNode) bool {
+	if p == nil || p == this.head {
+		return false
+	}
 	prev := this.head
 	cur := prev.next
 	for cur != nil {
 		if cur == p {
 			prev.next = cur.next
-			p = nil
+			cur = nil
 			this.length--
 			return true
 		}
