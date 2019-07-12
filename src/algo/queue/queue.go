@@ -11,8 +11,8 @@ type ArrayQueue struct {
 	limit int
 }
 
-func NewArrayQueue(maxLength int) *ArrayQueue {
-	return &ArrayQueue{limit: maxLength, data: make([]interface{}, maxLength)}
+func NewArrayQueue(limit int) *ArrayQueue {
+	return &ArrayQueue{limit: limit, data: make([]interface{}, limit)}
 }
 
 func (q *ArrayQueue) Enqueue(v interface{}) bool {
@@ -100,5 +100,57 @@ func (q *LinkedQueue) String() string {
 		cur = cur.next
 	}
 	s += fmt.Sprintf("%v", cur.val)
+	return s
+}
+
+type Queue interface {
+	Enqueue(v interface{}) bool
+	Dequeue() interface{}
+	String() string
+}
+
+// 循环队列,
+type CycleQueue struct {
+	data  []interface{}
+	head  int
+	tail  int
+	limit int
+}
+
+func NewCycleQueue(limit int) *CycleQueue {
+	return &CycleQueue{limit: limit, data: make([]interface{}, limit)}
+}
+
+func (q *CycleQueue) Enqueue(v interface{}) bool {
+	// 会浪费一个空间
+	if (q.tail+1)%q.limit == q.head {
+		fmt.Println("队列已满", v, q.data, q.tail, q.head)
+		return false
+	}
+	q.data[q.tail] = v
+	q.tail = (q.tail + 1) % q.limit
+	return true
+}
+
+func (q *CycleQueue) Dequeue() interface{} {
+	if q.head == q.tail {
+		fmt.Println("队列为空")
+		return nil
+	}
+	temp := q.data[q.head]
+	q.data[q.head] = nil
+	q.head = (q.head + 1) % q.limit
+	return temp
+}
+
+func (q *CycleQueue) String() string {
+	s := ""
+	var end = q.tail
+	if q.head > q.tail {
+		end = q.tail + q.limit
+	}
+	for i := q.head; i < end; i++ {
+		s += fmt.Sprintf("%v ", q.data[i%q.limit])
+	}
 	return s
 }

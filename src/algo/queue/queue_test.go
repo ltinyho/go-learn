@@ -5,8 +5,7 @@ import (
 	"testing"
 )
 
-func TestNewArrayQueue(t *testing.T) {
-	queue := NewArrayQueue(10)
+func testQueue(queue Queue) {
 	queue.Enqueue(1)
 	queue.Dequeue()
 	queue.Enqueue(1)
@@ -19,20 +18,17 @@ func TestNewArrayQueue(t *testing.T) {
 	queue.Enqueue(7)
 	fmt.Println(queue)
 }
+func TestNewArrayQueue(t *testing.T) {
+	queue := NewArrayQueue(4)
+	testQueue(queue)
+}
 
 func TestNewLinkedQueue(t *testing.T) {
 	queue := NewLinkedQueue()
-	queue.Enqueue(1)
-	queue.Dequeue()
-	queue.Enqueue(1)
-	queue.Enqueue(2)
-	queue.Enqueue(3)
-	queue.Dequeue()
-	queue.Dequeue()
-	queue.Dequeue()
-	queue.Enqueue(5)
-	queue.Enqueue(6)
-	queue.Dequeue()
-	queue.Enqueue(7)
-	fmt.Println(queue)
+	testQueue(queue)
+}
+
+func TestNewCycleQueue(t *testing.T) {
+	queue := NewCycleQueue(5)
+	testQueue(queue)
 }
