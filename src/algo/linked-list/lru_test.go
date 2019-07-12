@@ -1,4 +1,4 @@
-package algo
+package linked_list
 
 import (
 	"container/list"
