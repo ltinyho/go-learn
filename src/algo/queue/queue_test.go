@@ -29,6 +29,6 @@ func TestNewLinkedQueue(t *testing.T) {
 }
 
 func TestNewCycleQueue(t *testing.T) {
-	queue := NewCycleQueue(5)
+	queue := NewCycleQueue(4)
 	testQueue(queue)
 }

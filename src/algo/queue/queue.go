@@ -118,7 +118,7 @@ type CycleQueue struct {
 }
 
 func NewCycleQueue(limit int) *CycleQueue {
-	return &CycleQueue{limit: limit, data: make([]interface{}, limit)}
+	return &CycleQueue{limit: limit + 1, data: make([]interface{}, limit+1)}
 }
 
 func (q *CycleQueue) Enqueue(v interface{}) bool {
