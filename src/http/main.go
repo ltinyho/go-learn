@@ -3,18 +3,20 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func home(w http.ResponseWriter, r *http.Request) {
-	flusher, ok := w.(http.Flusher)
-	if !ok {
-		panic("expected http.ResponseWriter to be an http.Flusher")
-	}
-	w.Header().Set("X-Content-Type-Options", "nosniff")
-	for i := 1; i <= 100000000; i++ {
-		fmt.Fprintf(w, "Chunk #%d\n", i)
-		flusher.Flush() // Trigger "chunked" encoding and send a chunk...
-	}
+	w.Header().Add("Keep-Alive", "timeout=3")
+	http.SetCookie(w, &http.Cookie{
+		Name:     "lzh",
+		Value:    "haha",
+		Expires:  time.Now().Add(time.Hour*24*365 + 8*time.Hour),
+		MaxAge:   10,
+		//HttpOnly: true,
+		//SameSite: http.SameSiteStrictMode,
+	})
+	w.Write([]byte(r.URL.Query().Get("q")))
 }
 
 func main() {
