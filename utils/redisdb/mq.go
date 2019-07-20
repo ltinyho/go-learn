@@ -84,8 +84,11 @@ func (c *Consumer) check() bool {
 func (c *Consumer) pop() () {
 	for {
 		result, err := c.c.LPop(string(c.Channel)).Bytes()
-		if err != nil {
+		if err != redis.Nil && err != nil {
 			fmt.Printf("pop %v", err)
+			continue
+		}
+		if len(result) <= 0 {
 			continue
 		}
 		err = json.Unmarshal(result, &c.Message)

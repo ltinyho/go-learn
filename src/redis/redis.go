@@ -14,7 +14,6 @@ func main() {
 			case *redisdb.OrderMessage:
 				go func(id int) {
 					fmt.Println(id)
-
 				}(msg.Id)
 			}
 		},
