@@ -1,7 +1,7 @@
 package lock
 
 import (
-	"github.com/ltinyho/go-learn/utils/redis"
+	"github.com/ltinyho/go-learn/utils/redisdb"
 	"time"
 )
 

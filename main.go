@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-redis/redis"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
-	"github.com/ltinyho/go-learn/utils/redis"
 	"log"
 	"os"
 	"time"

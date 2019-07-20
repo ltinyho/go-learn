@@ -1,7 +1,6 @@
-package redis
+package redisdb
 
 import (
-	"fmt"
 	"github.com/go-redis/redis"
 	"os"
 )
@@ -14,5 +13,4 @@ func init() {
 		Password: os.Getenv("REDIS_AUTH"),
 		DB:       0,
 	})
-	fmt.Println("Client")
 }

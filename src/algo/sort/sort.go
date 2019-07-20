@@ -48,9 +48,7 @@ func SelectSort(array []int) []int {
 				min = j
 			}
 		}
-		temp := res[i]
-		res[i] = res[min]
-		res[min] = temp
+		res[i], res[min] = res[min], res[i]
 	}
 	return res
 }

@@ -2,7 +2,6 @@ package sort
 
 import (
 	"fmt"
-	"sort"
 	"testing"
 )
 
