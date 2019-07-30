@@ -29,3 +29,29 @@ func TestInsertTree(t *testing.T) {
 	tree.Delete(3)
 	InOrder(tree.root)
 }
+
+func TestNewHeap(t *testing.T) {
+	h := NewHeap(10)
+	h.Insert(1)
+	h.Insert(2)
+	h.Insert(3)
+	h.Insert(4)
+	h.Insert(5)
+	h.Insert(6)
+	h.Insert(7)
+	fmt.Println(h.data)
+	h.RemoveMax()
+	fmt.Println(h.data)
+}
+
+func TestHeapify(t *testing.T) {
+	var data = []int{-1, 1, 2, 3, 4, 5, 6, 7, -1, -1, -1}
+	BuildHeap(data, 7)
+	fmt.Println(data)
+}
+
+func TestSortHeap(t *testing.T) {
+	var data = []int{-1, 7, 3, 6, 4, 5, 2, 1}
+	SortHeap(data)
+	fmt.Println(data)
+}

@@ -1,7 +1,11 @@
 package _func
 
 import (
+	"bytes"
 	"fmt"
+	"io"
+	"os"
+	"strings"
 	"testing"
 )
 
@@ -55,4 +59,77 @@ func TestSliceChange(t *testing.T) {
 	data := []int{1, 2, 3, 4}
 	twice(data)
 	fmt.Println(data)
+}
+
+func f() *int {
+	var tmp = 1
+	fmt.Println(&tmp)
+	return &tmp
+}
+func g() int {
+	x := new(int)
+	fmt.Println(x)
+	return *x
+}
+
+func TestF(t *testing.T) {
+	res := f()
+	fmt.Println(res)
+}
+
+type MyFile struct {
+}
+
+func NewMyFile() *MyFile {
+	return &MyFile{}
+}
+
+func (f *MyFile) Close() {
+
+}
+
+func (f *MyFile) Open() {
+
+}
+
+var CloseFile = (*MyFile).Close
+
+func TestName(t *testing.T) {
+	f := NewMyFile()
+	CloseFile(f)
+}
+
+type UpperWriter struct {
+	io.Writer
+}
+
+func (p UpperWriter) Write(data []byte) (n int, err error) {
+	return p.Writer.Write(bytes.ToUpper(data))
+}
+
+func TestUpperWriter(t *testing.T) {
+	fmt.Fprintln(&UpperWriter{os.Stdout}, "hello, world")
+}
+
+type UppperString string
+
+func (s UppperString) String() string {
+	return strings.ToUpper(string(s))
+}
+
+func TestUpperString(t *testing.T) {
+	fmt.Fprintln(os.Stdout, UppperString("hello,world"))
+}
+
+type TB struct {
+	testing.TB
+}
+
+func (p *TB) Fatal(args ...interface{}) {
+	fmt.Println("TB.Fatal disabled!")
+}
+
+func TestTb(t *testing.T) {
+	var tb testing.TB = new(TB)
+	tb.Fatal("f")
 }

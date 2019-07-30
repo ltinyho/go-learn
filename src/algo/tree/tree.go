@@ -1,6 +1,8 @@
 package tree
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Node struct {
 	data  int
@@ -133,4 +135,75 @@ func PostOrder(root *Node) {
 	PostOrder(root.left)
 	PostOrder(root.right)
 	fmt.Printf("%v", root.data)
+}
+
+type Heap struct {
+	count int   // 已存数据个数
+	data  []int // 数据
+	size  int   // 最大容量
+}
+
+func NewHeap(size int) *Heap {
+	return &Heap{
+		count: 0,
+		data:  make([]int, size+1),
+		size:  size,
+	}
+}
+func (h *Heap) Insert(num int) {
+	if h.count >= h.size {
+		fmt.Println("full size")
+		return
+	}
+	h.count++
+	h.data[h.count] = num
+	i := h.count
+	for i/2 > 0 && h.data[i] > h.data[i/2] {
+		h.data[i], h.data[i/2] = h.data[i/2], h.data[i]
+		i = i / 2
+	}
+}
+func (h *Heap) RemoveMax() {
+	if h.count <= 0 {
+		return
+	}
+	h.data[1] = h.data[h.count]
+	h.data[h.count] = -1
+	h.count--
+	Heapify(h.data, h.count, 1)
+}
+
+func Heapify(data []int, count, i int) {
+	for {
+		maxPos := i
+		if i*2 <= count && data[i] < data[i*2] {
+			maxPos = i * 2
+		}
+
+		if i*2+1 <= count && data[maxPos] < data[i*2+1] {
+			maxPos = i*2 + 1
+		}
+		if maxPos == i {
+			break
+		}
+		data[i], data[maxPos] = data[maxPos], data[i]
+		i = maxPos
+	}
+}
+
+func BuildHeap(data []int, count int) {
+	for i := count / 2; i >= 1; i-- {
+		Heapify(data, count, i)
+	}
+}
+
+func SortHeap(data []int) {
+	count := len(data)-1
+	BuildHeap(data, count)
+	k := count
+	for k > 1 {
+		data[k], data[1] = data[1], data[k]
+		k--
+		Heapify(data, k, 1)
+	}
 }
