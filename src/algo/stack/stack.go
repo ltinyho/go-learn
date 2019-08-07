@@ -79,6 +79,7 @@ var operatorMap = map[string]int{
 	"*": 2,
 	"/": 2,
 }
+
 // 1+13*9+44-12/3
 func CalExpression(exp string) uint {
 	/*	operatorStack := NewStack()

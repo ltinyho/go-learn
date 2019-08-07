@@ -21,7 +21,7 @@ func main() {
 
 	for i := 0; i < 10; i++ {
 		fmt.Println(i)
-		c.L.Lock() //3
+		c.L.Lock()            //3
 		for len(queue) == 2 { //4
 			c.Wait() //5
 		}

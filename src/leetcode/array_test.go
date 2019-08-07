@@ -34,7 +34,7 @@ func TestSearchInsert1(t *testing.T) {
 	fmt.Println(res)
 }
 func TestMaxSubArray(t *testing.T) {
-	max := MaxSubArray([]int{10, -2, -3, 5,})
+	max := MaxSubArray([]int{10, -2, -3, 5})
 	fmt.Println(max)
 }
 

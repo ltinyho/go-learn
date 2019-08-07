@@ -132,4 +132,30 @@ func (p *TB) Fatal(args ...interface{}) {
 func TestTb(t *testing.T) {
 	var tb testing.TB = new(TB)
 	tb.Fatal("f")
+	tb1 := TB{}
+	tb1.Fatal("f")
+}
+
+type names []int
+
+func (n names) change() {
+	n[0], n[1] = n[1], n[0]
+}
+func TestAddName(t *testing.T) {
+	n := names{1, 2}
+	n.change()
+	fmt.Println(n)
+}
+
+type persion struct {
+	name []string
+}
+
+func (p persion) add() {
+	p.name = append(p.name, "haha")
+}
+func TestPersionAdd(t *testing.T) {
+	p := persion{}
+	p.add()
+	fmt.Println(p.name)
 }

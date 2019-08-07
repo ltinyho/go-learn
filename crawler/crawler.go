@@ -1,6 +1,5 @@
 package crawler
 
-
-func Crawler(){
+func Crawler() {
 
 }

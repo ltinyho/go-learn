@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"reflect"
+	"unicode/utf8"
 	"unsafe"
 )
 
@@ -14,7 +15,15 @@ func main() {
 	fmt.Printf("%#v , %v \n", []byte(s1), len(s1))
 	fmt.Println("\xe4\xb813a13")
 	// 将字符串转成[]byte 字节序列,一般不会产生运行时开销
-	for i, c := range []byte("世界abc") {
-		fmt.Println(i, c)
+	s2 := "世界abc"
+	fmt.Println(utf8.RuneCountInString(s2))
+	s3 := []rune(s2)
+	fmt.Println(len(s3))
+	for k := range s3 {
+		fmt.Println(string(s3[k]))
+	}
+	str := "hello 世界"
+	for _, v := range str {
+		fmt.Println(string(v))
 	}
 }

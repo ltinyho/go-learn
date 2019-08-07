@@ -16,7 +16,7 @@ func TestLru(t *testing.T) {
 	l.add("7", "7")
 	l.get("4")
 	l.get("2")
-	a :=list.List{}
+	a := list.List{}
 	a.Back()
 	fmt.Println(l)
 }

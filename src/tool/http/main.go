@@ -9,10 +9,10 @@ import (
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Keep-Alive", "timeout=3")
 	http.SetCookie(w, &http.Cookie{
-		Name:     "lzh",
-		Value:    "haha",
-		Expires:  time.Now().Add(time.Hour*24*365 + 8*time.Hour),
-		MaxAge:   10,
+		Name:    "lzh",
+		Value:   "haha",
+		Expires: time.Now().Add(time.Hour*24*365 + 8*time.Hour),
+		MaxAge:  10,
 		//HttpOnly: true,
 		//SameSite: http.SameSiteStrictMode,
 	})

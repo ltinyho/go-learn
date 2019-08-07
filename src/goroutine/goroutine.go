@@ -9,6 +9,17 @@ import (
 
 // 保证 goroutine 按顺序执行
 func main() {
+	raceCondition()
+}
+
+func goPrint() {
+	for {
+		go fmt.Println(0)
+		fmt.Println(1)
+	}
+}
+
+func run() {
 	var count int64
 	num := 100
 	trigger := func(i int64, fn func()) {
@@ -34,4 +45,22 @@ func main() {
 		}(int64(i))
 	}
 	trigger(int64(num), func() {})
+}
+
+var i = 0
+
+func raceCondition() {
+	go func() {
+		for i < 10 {
+			i = i + 1
+			fmt.Println("A wins!")
+		}
+	}()
+	go func() {
+		for i > -10 {
+			i = i - 1
+			fmt.Println("B wins!")
+		}
+	}()
+	time.Sleep(time.Hour)
 }

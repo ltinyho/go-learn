@@ -81,7 +81,7 @@ func (c *Consumer) check() bool {
 	}
 	return true
 }
-func (c *Consumer) pop() () {
+func (c *Consumer) pop() {
 	for {
 		result, err := c.c.LPop(string(c.Channel)).Bytes()
 		if err != redis.Nil && err != nil {
@@ -99,7 +99,7 @@ func (c *Consumer) pop() () {
 		c.do()
 	}
 }
-func (c *Consumer) sub() () {
+func (c *Consumer) sub() {
 	sub := c.c.Subscribe(string(c.Channel))
 	for {
 		result, err := sub.ReceiveMessage()
@@ -116,7 +116,7 @@ func (c *Consumer) sub() () {
 	}
 }
 
-func (c *Consumer) do() () {
+func (c *Consumer) do() {
 	c.DoFunc(c.Message)
 }
 func (c *Consumer) Listen() {

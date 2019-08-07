@@ -198,7 +198,7 @@ func BuildHeap(data []int, count int) {
 }
 
 func SortHeap(data []int) {
-	count := len(data)-1
+	count := len(data) - 1
 	BuildHeap(data, count)
 	k := count
 	for k > 1 {

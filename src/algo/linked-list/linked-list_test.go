@@ -11,7 +11,7 @@ func TestNewLinkedList(t *testing.T) {
 	linkedList.InsertToTail(2)
 	linkedList.InsertToTail(3)
 	linkedList.InsertToHead(4)
-	node:= linkedList.FindByIndex(2)
+	node := linkedList.FindByIndex(2)
 	fmt.Println(node)
 	linkedList.DeleteNode(node)
 	fmt.Println(linkedList)
