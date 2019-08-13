@@ -2,7 +2,10 @@ package sort
 
 import (
 	"fmt"
+	"os"
+	"runtime"
 	"testing"
+	"time"
 )
 
 func TestBubbleSort(t *testing.T) {
@@ -45,9 +48,31 @@ func TestMergeArray(t *testing.T) {
 
 func BenchmarkInsertSort(b *testing.B) {
 	b.StartTimer()
+	fmt.Printf("[GOMAXPROCS=%d, NUM_CPU=%d, NUM_GOROUTINE=%d]",
+		runtime.GOMAXPROCS(-1), runtime.NumCPU(), runtime.NumGoroutine())
 	for i := 0; i < b.N; i++ {
 		array := []int{1, 4, 3, 5, 6, 7, 3, 1}
 		_ = BubbleSort(array)
+		go func() {
+			fmt.Println(1)
+		}()
 	}
+
 	b.StopTimer()
+}
+func BenchmarkTest(b *testing.B) {
+	curstomTimerTag := true
+	if curstomTimerTag {
+		b.StopTimer()
+	}
+	time.Sleep(time.Nanosecond)
+	if curstomTimerTag {
+		b.StartTimer()
+		b.SetBytes(1)
+	}
+}
+
+func ExampleTest() {
+	fmt.Printf("hello")
+	// Output: hello
 }

@@ -131,7 +131,7 @@ func testOrderedMap(
 		}
 		if !hasKey {
 			t.Errorf("ERROR: The keys of OrderedMap(elemType=%s) value %v do not contains %v keys %v!\n",
-				elemKind, omap, key,keys)
+				elemKind, omap, key, keys)
 			t.FailNow()
 		}
 		var hasElem bool
@@ -322,4 +322,19 @@ func genRandAZAscii() int {
 	max := 90 // Z
 	rand.Seed(time.Now().UnixNano())
 	return min + rand.Intn(max-min)
+}
+
+func TestName(t *testing.T) {
+	t.Parallel()
+	t.Log("TestName")
+}
+func TestName1(t *testing.T) {
+	t.Log("TestName1")
+	t.Parallel()
+}
+func TestName2(t *testing.T) {
+	t.Log("TestName2")
+}
+func TestName3(t *testing.T) {
+	t.Log("TestName3")
 }
