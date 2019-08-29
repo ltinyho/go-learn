@@ -46,7 +46,5 @@ func TestInterfaceImplement(t *testing.T) {
 	dogP := &dog
 	dogPtr := uintptr(unsafe.Pointer(dogP))
 	namePtr := dogPtr + unsafe.Offsetof(dogP.name)
-	*namePtr = 1
-	nameP := (*string)(unsafe.Pointer(namePtr))
 
 }
