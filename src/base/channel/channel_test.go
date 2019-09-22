@@ -7,14 +7,6 @@ import (
 	"time"
 )
 
-type Person struct {
-	Name string
-}
-type Book struct {
-	person Person
-	name   string
-}
-
 // 单向通道,一般用来限制函数声明,约束其他代码的行为
 func TestSingleChannel(t *testing.T) {
 	ch1 := make(chan<- int, 1) // 发通道,发送到通道
@@ -27,15 +19,7 @@ func TestSingleChannel(t *testing.T) {
 	b := <-ch4
 	fmt.Println(b, ch2)
 }
-func getIntChan() <-chan int {
-	num := 5
-	ch := make(chan int, num)
-	for i := 0; i < num; i++ {
-		ch <- i
-	}
-	close(ch)
-	return ch
-}
+
 
 // 测试 chanel copy
 func TestChannelCopy(t *testing.T) {
