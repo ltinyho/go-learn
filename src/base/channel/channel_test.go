@@ -1,19 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"math/rand"
+	"sync"
 	"testing"
 	"time"
 )
-
-type Person struct {
-	Name string
-}
-type Book struct {
-	person Person
-	name   string
-}
 
 // 单向通道,一般用来限制函数声明,约束其他代码的行为
 func TestSingleChannel(t *testing.T) {
@@ -26,15 +20,6 @@ func TestSingleChannel(t *testing.T) {
 	ch4 := getIntChan()
 	b := <-ch4
 	fmt.Println(b, ch2)
-}
-func getIntChan() <-chan int {
-	num := 5
-	ch := make(chan int, num)
-	for i := 0; i < num; i++ {
-		ch <- i
-	}
-	close(ch)
-	return ch
 }
 
 // 测试 chanel copy
@@ -119,3 +104,147 @@ func TestChannelLimit(t *testing.T) {
 		fmt.Println("i", i)
 	}
 }
+
+var done1 = make(chan bool, 2)
+var msg string
+
+func aGoroutine() {
+	msg = "hello, world"
+	done1 <- true
+}
+
+// 内存一致性模型
+func TestMem1(t *testing.T) {
+	go aGoroutine()
+	<-done1
+	println(msg)
+}
+
+var done2 = make(chan bool, 0)
+
+func bGoroutine() {
+	msg = "hello, world"
+	<-done2
+}
+
+// 内存一致性模型
+func TestMem2(t *testing.T) {
+	go bGoroutine()
+	done2 <- true
+	println(msg)
+}
+
+type line struct {
+	l      sync.RWMutex
+	online bool
+}
+
+func (o *line) Online() {
+	o.l.Lock()
+	defer o.l.Unlock()
+	o.online = true
+}
+
+func (o *line) Offline() {
+	o.l.Lock()
+	defer o.l.Unlock()
+	o.online = false
+}
+func (o *line) isOnline() bool {
+	o.l.RLock()
+	defer o.l.RUnlock()
+	return o.online
+}
+
+// 超时控制
+func TestName(t *testing.T) {
+	closeCh := time.Tick(time.Second * 2)
+	testCh := make(chan int, 10)
+	rand.Seed(time.Now().Unix())
+	var heart int64 = 1
+	_line := &line{}
+	var count = 3
+	var _count = count
+	var reconnCount = 3
+	go func() {
+		for range time.Tick(time.Second * time.Duration(heart)) {
+			val := rand.Intn(10)
+			if val > 5 {
+				fmt.Println("Offline")
+				_line.Offline()
+			} else {
+				fmt.Println("Online")
+				_line.Online()
+			}
+		}
+	}()
+test:
+	for {
+		select {
+		case <-closeCh:
+			isOnline := _line.isOnline()
+			if !isOnline {
+				_count--
+				if _count <= 0 {
+					_count = count
+					fmt.Println("reconnection")
+					reconnCount--
+					if reconnCount <= 0 {
+						fmt.Println("too many reconnection")
+						break test
+					}
+				}
+			}
+		case val := <-testCh:
+			fmt.Println(val)
+		}
+	}
+	fmt.Println("end")
+}
+
+// 解耦生产者和消费者
+func TestConsumer(t *testing.T) {
+	tasks := make(chan int, 1)
+	workCount := 5
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	closeChan := make(chan int, 0)
+	for i := 0; i < workCount; i++ {
+		go work(ctx, i, tasks)
+	}
+	rand.Seed(time.Now().UnixNano())
+	go func() {
+		for {
+			select {
+			case <-closeChan:
+				cancel()
+				fmt.Println("close")
+				return
+			case <-ctx.Done():
+				return
+			case tasks <- rand.Intn(1000):
+			}
+		}
+	}()
+	select {
+	case <-ctx.Done():
+		close(tasks)
+	case <-time.After(time.Second * 5):
+		close(closeChan)
+	}
+}
+
+func work(ctx context.Context, id int, tasks <-chan int) {
+	for {
+		select {
+		case task := <-tasks:
+			fmt.Printf("id:%d,task:%d\n", id, task)
+		case <-ctx.Done():
+			fmt.Println("work done:", id)
+			return
+		}
+	}
+}
+
+
