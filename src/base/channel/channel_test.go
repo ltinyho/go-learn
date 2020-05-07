@@ -246,5 +246,38 @@ func work(ctx context.Context, id int, tasks <-chan int) {
 		}
 	}
 }
+// select 两个 channel,在其他一个 channel 中同步发送数据到另一个 channel 中
+type c struct {
+	send    chan int
+	receive chan int
+}
 
-
+func TestChan(t *testing.T) {
+	_c := &c{
+		send:    make(chan int, 0),
+		receive: make(chan int, 0),
+	}
+	go func() {
+		for {
+			select {
+			case val := <-_c.send:
+				go func(i int) {
+					fmt.Println(i)
+				}(val)
+			case val := <-_c.receive:
+				fmt.Println("receive", val)
+				go func(i int) {
+					_c.send <- i
+					_c.send <- i
+					_c.send <- i
+					_c.send <- i
+					_c.send <- i
+				}(val)
+			}
+		}
+	}()
+	rand.Seed(time.Now().UnixNano())
+	for range time.Tick(time.Millisecond) {
+		_c.receive <- rand.Intn(100)
+	}
+}
