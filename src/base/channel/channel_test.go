@@ -246,6 +246,11 @@ func work(ctx context.Context, id int, tasks <-chan int) {
 		}
 	}
 }
+// select 两个 channel,在其他一个 channel 中同步发送数据到另一个 channel 中
+type c struct {
+	send    chan int
+	receive chan int
+}
 
 func TestClosedChannel(t *testing.T) {
 	ch := make(chan int, 10000)

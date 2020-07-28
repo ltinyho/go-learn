@@ -2,6 +2,9 @@ package _interface
 
 import (
 	"fmt"
+	"io"
+	"os"
+	"reflect"
 	"testing"
 	"unsafe"
 )
@@ -46,5 +49,41 @@ func TestInterfaceImplement(t *testing.T) {
 	dogP := &dog
 	dogPtr := uintptr(unsafe.Pointer(dogP))
 	namePtr := dogPtr + unsafe.Offsetof(dogP.name)
+	fmt.Println("namePtr", namePtr)
+}
 
+func TestTypeAssertion(t *testing.T) {
+	var r io.Reader
+	var w io.Writer
+	tty, err := os.OpenFile("/dev/tty", os.O_RDWR, 0)
+	if err != nil {
+		return
+	}
+	r = tty
+	w = r.(io.Writer)
+	fmt.Println(w)
+}
+
+// 反射第三定律: 只有可以修改的值才能修改 反射对象可修改，value值必须是可设置的
+func TestSet(t *testing.T) {
+	var i int64 = 1
+	v := reflect.ValueOf(&i)
+	v.Elem().SetInt(2)
+	fmt.Println(i)
+}
+
+func TestName(t *testing.T) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println(r)
+		}
+	}()
+	defer func() {
+		defer func() {
+			panic("panic again and again")
+		}()
+		panic("panic again")
+	}()
+
+	panic("panic once")
 }
