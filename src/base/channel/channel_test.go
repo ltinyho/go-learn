@@ -157,7 +157,7 @@ func (o *line) isOnline() bool {
 }
 
 // 超时控制
-func TestName(t *testing.T) {
+func TestTimeOut(t *testing.T) {
 	closeCh := time.Tick(time.Second * 2)
 	testCh := make(chan int, 10)
 	rand.Seed(time.Now().Unix())
@@ -247,4 +247,40 @@ func work(ctx context.Context, id int, tasks <-chan int) {
 	}
 }
 
+func TestClosedChannel(t *testing.T) {
+	ch := make(chan int, 10000)
+	go func() {
+		for {
+			if len(ch) == 10000 {
+				fmt.Println("closed")
+				close(ch)
+				break
+			}
+			ch <- 1
+		}
+	}()
+	go func() {
+		var count = 1
+		time.Sleep(time.Second * 5)
+		for {
+			count++
+			val := <-ch
+			if count <= 10000 {
+				fmt.Println(count, val)
+			}
+		}
+	}()
+	select {}
+}
 
+func TestName(t *testing.T) {
+	val := foo()
+	t.Log(val)
+}
+func foo() (i int) {
+	defer func() {
+		i++
+	}()
+
+	return i
+}

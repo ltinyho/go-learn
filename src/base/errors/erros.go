@@ -1,10 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func main() {
-	fetchDemo()
-	fmt.Println("The main function is executed.")
+	for i:=0;i<10;i++{
+		defer func(id int) {
+			fmt.Println(id)
+		}(i)
+	}
 }
 
 func fetchDemo() {
@@ -29,4 +35,32 @@ func fetchElement(ss []string, index int) (element string) {
 	defer fmt.Printf("The element is \"%s\". [index=%d]\n", element, index)
 	fetchElement(ss, index+1)
 	return
+}
+
+func runPanic() {
+	go func() {
+		fmt.Println(IsPanic())
+		defer func() {
+			if err := recover(); err != nil {
+				fmt.Println("Recover success...")
+				return
+			}
+		}()
+		panic("ok")
+	}()
+	for {
+		select {
+		case <-time.Tick(time.Second):
+			fmt.Println("tick")
+		}
+	}
+}
+// recover没有被defer方法直接调用,不能捕获panic
+func IsPanic() bool {
+	if err := recover(); err != nil {
+		fmt.Println("Recover success...")
+		return true
+	}
+
+	return false
 }
