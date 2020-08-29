@@ -18,3 +18,6 @@ func TestNewLinkedList(t *testing.T) {
 	linkedList.Reverse()
 	fmt.Println(linkedList)
 }
+func TestName(t *testing.T) {
+	fmt.Printf("%d",0xef01)
+}

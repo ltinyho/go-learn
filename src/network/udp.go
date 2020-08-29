@@ -62,8 +62,10 @@ func main() {
 		log.Error(err)
 		return
 	}
-	data := make([]byte, 2)
-	binary.LittleEndian.PutUint16(data, 43981)
+	data := make([]byte, 4)
+	binary.LittleEndian.PutUint16(data[0:2], 0xabcd)
+	binary.LittleEndian.PutUint16(data[2:4], 0xef01)
+	fmt.Println("%x",data)
 	_, err = conn.Write(data)
 	if err != nil {
 		log.Error(err)
