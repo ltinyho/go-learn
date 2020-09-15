@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-redis/redis"
+	"github.com/google/uuid"
 	"log"
+	"strconv"
+	"time"
 )
 
 type ConsumerMode string
@@ -83,7 +86,7 @@ func (c *Consumer) check() bool {
 }
 func (c *Consumer) pop() {
 	for {
-		result, err := c.c.BLPop(0,string(c.Channel)).Result()
+		result, err := c.c.BLPop(0, string(c.Channel)).Result()
 		if err != redis.Nil && err != nil {
 			fmt.Printf("pop %v", err)
 			continue
@@ -128,4 +131,75 @@ func (c *Consumer) Listen() {
 			c.sub()
 		}
 	}
+}
+
+type delayQueue struct {
+	client *redis.Client
+	key    string
+	fn     func(msg *msg) bool
+}
+type msg struct {
+	Uuid string
+	Data []byte
+	Try  int
+}
+
+func newDelayQueue(client *redis.Client, key string, fn func(msg *msg) bool) *delayQueue {
+	return &delayQueue{client: client, key: key, fn: fn}
+}
+
+func (d *delayQueue) start() {
+	for {
+		ts := time.Now().Unix()
+		tsStr := strconv.Itoa(int(ts))
+		data, err := d.client.ZRangeByScore(d.key, redis.ZRangeBy{
+			Max:    tsStr,
+			Min: "-inf",
+			Offset: 0,
+			Count:  1,
+		}).Result()
+		if err == redis.Nil || len(data) == 0 {
+			fmt.Print("empty\n")
+			time.Sleep(time.Second)
+			continue
+		}
+		// 通过 Rem 保证多个 goroutine 不会同时处理
+		// TODO 使用 lua 脚本,使用服务端原子操作,解决多客户端抢占问题.
+		ok, err := d.client.ZRem(d.key, data[0]).Result()
+		if err != nil {
+			fmt.Printf("err:%s", err)
+			continue
+		}
+		if ok == 1 {
+			m := &msg{}
+			err = json.Unmarshal([]byte(data[0]), m)
+			if err != nil {
+				fmt.Printf("err:%s", err)
+				continue
+			}
+			success := d.fn(m)
+			if success == false && m.Try <= 3 {
+				d.delay(m)
+			}
+		}
+	}
+}
+
+func (d *delayQueue) delay(msg *msg) {
+	msg.Try += 1
+	msg.Uuid = uuid.New().String()
+	data, err := json.Marshal(*msg)
+	if err != nil {
+		fmt.Println("err",err)
+		return
+	}
+	ok, err := d.client.ZAdd(d.key, redis.Z{
+		Score:  float64(time.Now().Add(time.Second * 5).Unix()),
+		Member: string(data),
+	}).Result()
+	if err != nil {
+		fmt.Println("err", err)
+		return
+	}
+	fmt.Printf("ok:%d\n", ok)
 }

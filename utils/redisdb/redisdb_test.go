@@ -1,6 +1,7 @@
 package redisdb
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/go-redis/redis"
 	"math/rand"
@@ -35,9 +36,49 @@ func TestSubscribe(t *testing.T) {
 			if err != nil {
 				t.Error(err)
 			}
-			time.Sleep(time.Second*5)
-			Client.Publish("test",redis.Pong{Payload:"1" })
+			time.Sleep(time.Second * 5)
+			Client.Publish("test", redis.Pong{Payload: "1"})
 		}
 	}()
 	time.Sleep(time.Hour)
+}
+
+func TestLock(t *testing.T) {
+	for i := 0; i < 1000; i++ {
+		go getLock()
+	}
+	select {}
+}
+
+type lockRes struct {
+	Name string
+	Tag  int64
+}
+
+// 分布式锁
+func getLock() {
+	tag := time.Now().UnixNano()
+	key := "lzh:lock"
+	a := map[string]interface{}{
+		"Name": "ok",
+		"tag":  tag,
+	}
+	val, _ := json.Marshal(a)
+	_, err := Client.SetNX(key, val, 5*time.Second).Result()
+	if err != nil {
+		fmt.Printf("lock:%s", err)
+	}
+	second := rand.Int31n(10)
+	time.Sleep(time.Second * time.Duration(second))
+	res, err := Client.Get(key).Result()
+	if err != nil {
+		fmt.Printf("res:%s", err)
+	}
+	lr := lockRes{}
+	json.Unmarshal([]byte(res), &lr)
+	if lr.Tag == tag {
+		Client.Del(key)
+	} else {
+		fmt.Println("tag not equal")
+	}
 }
