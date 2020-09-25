@@ -12,6 +12,7 @@ require (
 	github.com/onsi/gomega v1.10.2 // indirect
 	github.com/pborman/uuid v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.6.0
+	github.com/stretchr/testify v1.2.2
 	gorm.io/driver/mysql v1.0.1
 	gorm.io/gorm v1.20.0
 )
