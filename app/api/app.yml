@@ -1,0 +1,23 @@
+runmode: dev # 运行模式 dev 开发环境 test 测试环境 debug debug环境 prod 正式环境
+logger:
+  level: debug # default log level, used if hooks not specify a log level
+  reportcaller: true # show reportcaller, will affect all hooks
+  formatter: # default formatter, used if hooks not specify a formatter
+    name: classic # default formatter name
+    opts: # default formatter opts
+      forcecolors: true
+  stdout:
+    enabled: true
+    level: debug
+  file:
+    enabled: true
+    path: ./log
+    level: debug
+    formatter:
+      name: classic
+
+app:
+  addr: ":8080"
+
+debugserver:
+  enabled: true

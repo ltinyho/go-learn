@@ -19,11 +19,11 @@ func safeCode(cid string, res int) (code int) {
 	cidMod := cidNum % 1 << 4
 	rand.Seed(time.Now().UnixNano())
 	randNum := rand.Intn(1 << 10)
-	valStr:=""
-	valStr+=fmt.Sprintf("%0.11b", randNum)
-	valStr+=fmt.Sprintf("%0.4b", cidMod)
-	valStr+=fmt.Sprintf("%0.4b", res)
-	val,err:=strconv.ParseInt(valStr,2,32)
+	valStr := ""
+	valStr += fmt.Sprintf("%0.11b", randNum)
+	valStr += fmt.Sprintf("%0.4b", cidMod)
+	valStr += fmt.Sprintf("%0.4b", res)
+	val, err := strconv.ParseInt(valStr, 2, 32)
 	if err != nil {
 		return 0
 	}

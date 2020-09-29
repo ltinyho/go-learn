@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"testing"
 	"time"
@@ -18,6 +19,9 @@ func TestSafeCode(t *testing.T) {
 	for range time.Tick(time.Millisecond) {
 		now := time.Now()
 		code := safeCode("C0001", 0x01)
+		if code > 500000 {
+			fmt.Printf("code:%d\n", code)
+		}
 		oldCode, ok := valMap[code]
 		if ok {
 			i++
@@ -39,3 +43,24 @@ func TestSafeCode(t *testing.T) {
 		}
 	}
 }
+
+func TestName(t *testing.T) {
+	squery := "a=afda=12321&asf=adsf&adf=adsfsd&adsf=adsfasd&asdf=basfsd"
+	data := XOR([]byte(squery), []byte("921064e47128faf3febc6ce3836715ec"))
+	dataStr := base64.StdEncoding.EncodeToString(data)
+	fmt.Println(dataStr)
+	baseDeData,_:=base64.StdEncoding.DecodeString(dataStr)
+	fmt.Println()
+	text := XOR(baseDeData, []byte("921064e47128faf3febc6ce3836715ec"))
+	fmt.Println(string(text))
+}
+func XOR(input []byte, key []byte) []byte { //解密時僅需將原本的output改到input,key不變即可
+	output := make([]byte, len(input))
+	for i := range input {
+		output[i] = input[i] ^ key[i%len(key)] //當input比key長時會不斷使用key對每一個byte加密
+	}
+	return output
+}
+
+
+
