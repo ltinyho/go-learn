@@ -19,13 +19,29 @@ func route(r *gin.Engine) {
 	r.POST("/upload", upload)
 	r.POST("/save", save)
 	r.GET("/test", func(c *gin.Context) {
-		fileData,err:=ioutil.ReadFile("test.img")
+		fileData, err := ioutil.ReadFile("test.img")
 		if err != nil {
 			log.Error(err)
 			gin_util.SendPureFailed(c)
 			return
 		}
 		fmt.Println(len(fileData))
+		fileData = nil
+		gin_util.SendPureOk(c)
+	})
+	r.GET("/bak", func(c *gin.Context) {
+		f, err := os.Open("test.img")
+		if err != nil {
+			log.Error(err)
+			gin_util.SendPureFailed(c)
+			return
+		}
+		err = _saveFileByReader(f, "test.bak.img")
+		if err != nil {
+			log.Error(err)
+			gin_util.SendPureFailed(c)
+			return
+		}
 		gin_util.SendPureOk(c)
 	})
 }
@@ -37,7 +53,7 @@ func ping(c *gin.Context) {
 }
 
 func test(c *gin.Context) {
-	f,err:=os.Open("test.img")
+	f, err := os.Open("test.img")
 	if err != nil {
 		log.Error(err)
 		gin_util.SendPureFailed(c)
@@ -46,7 +62,7 @@ func test(c *gin.Context) {
 	var buf bytes.Buffer
 	buf.ReadFrom(f)
 	f.Close()
-	log.Debugf("name%s",f.Name())
+	log.Debugf("name%s", f.Name())
 	runtime.GC()
 	gin_util.SendPureOk(c)
 	return
@@ -82,7 +98,7 @@ func upload(c *gin.Context) {
 		return
 	}
 	defer data.Close()
-	err = uploadFile(data, ff.Filename)
+	err = _saveFileByReader(data, ff.Filename)
 	if err != nil {
 		log.Error(err)
 		gin_util.SendPureFailed(c)
@@ -92,7 +108,7 @@ func upload(c *gin.Context) {
 	return
 }
 
-func uploadFile(file io.Reader, name string) (err error) {
+func _saveFileByReader(file io.Reader, name string) (err error) {
 	of, err := os.Create(name)
 	if err != nil {
 		return
@@ -101,6 +117,14 @@ func uploadFile(file io.Reader, name string) (err error) {
 	return
 }
 
+func _saveFileByBytes(data []byte, name string) (err error) {
+	of, err := os.Create(name)
+	if err != nil {
+		return
+	}
+	_, err = of.Write(data)
+	return
+}
 func saveFile(f *multipart.FileHeader) (err error) {
 	body, err := qutil.PostFile("http://localhost:8080/upload", f)
 	if err != nil {

@@ -82,3 +82,9 @@ func getLock() {
 		fmt.Println("tag not equal")
 	}
 }
+
+func TestName(t *testing.T) {
+	for i := 0; i < 513; i++ {
+		Client.HSet("lzh",fmt.Sprintf("%d",i),i)
+	}
+}
