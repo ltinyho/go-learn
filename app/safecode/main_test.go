@@ -75,6 +75,7 @@ func TestEncrypt(t *testing.T) {
 	rn := 44
 	s := 0xf
 	code := createSafeCode(cid, rn, s)
+	fmt.Println(code)
 	cidNum, randNum, state := deSafeCode(decryptCode(code))
 	assert.Equal(t, cidNum, getCidNum(cid))
 	assert.Equal(t, randNum, rn)
@@ -83,7 +84,7 @@ func TestEncrypt(t *testing.T) {
 func TestDe(t *testing.T) {
 	max := 1 << 11
 	for i := 0; i < max; i++ {
-		code := createSafeCode("C0002", i, 0x00)
+		code := createSafeCode("C0001", i, 0x00)
 		fmt.Println(code)
 	}
 	fmt.Printf("%019b\n", xorNum)
@@ -132,14 +133,13 @@ func TestXorNum(t *testing.T) {
 }
 
 func TestParseQuery(t *testing.T) {
-	data, err := parseQueryQR("WltVDXUEVQQGF1tWOQMHRxI6AQJGAgZaTEoLAgEFQwpXbVNRQkBYdlZFRghXRw9dORULBwtTVBVIXEZoU1QRF2ZRUEBXVwxATgwKCFZHFlwWOgAKUl4nUkxHBgUXRQoTZkJYVAsEVxJFUFxcOQ8TXltWWloAU1ACDAUBABdHAAJKXV8NBxIRRwoABAhUU1QLU11XRUUKAl0FBA8FU1FSUQ4GAFQEBVMFUQNRXVRTUwQFUwBWVFEHClo=", "921064e47128faf3febc6ce3836715ec")
+	data, err := parseQueryQR("WltVDXUEVQQGF1tWOQMHRxI6AQJGAgZaTEoLAgEFQwpXbVNZUgknVUNFAglACAhsFgwGXgZSQ0NXQ2lVUEERPFpTQVFVXRFNCgkCCEARCUM5BwsHCyEER0wDBBFBWhU8SVtVDQYGQ0ZWX1ZnCBQLDlZRWloQEQBSS1xYCgATERAEAwcABANXDQcAAh4QBBQOV0MRClENWFENUFUHBQwDUg1XVwgPDQcABAMCXFJZVwRfAFdQAVtVs", "921064e47128faf3febc6ce3836715ec")
 	if err != nil {
 		t.Error(err)
 		return
 	}
 	fmt.Println(data.Encode())
 }
-
 func TestGenQuery(t *testing.T) {
 	query := url.Values{}
 	query.Add("cid", "C0001")
@@ -153,10 +153,18 @@ func TestGenQuery(t *testing.T) {
 	query.Add("rand_num", "1234")
 	query.Add("ts", "1602228585")
 	query.Add("ver", "1")
-	sign:=offlineSign(query.Encode())
-	fmt.Println(query.Encode()+"&sign"+sign)
+	sign := offlineSign(query.Encode())
+	fmt.Println(query.Encode() + "&sign" + sign)
 }
 
 //cid=C0001&in_batt=Batt01&in_batt_capacity=500&in_pid=01&pop_batt_capacity=800&pop_bid=Batt02&pop_pid=02&rand_num=38960514677&reason=1&ts=1602228585
 
 //cid=C0001&in_batt_capacity=500&in_batt=Batt01&in_pid=01&pop_batt_capacity=800&pop_bid=Batt02&pop_pid=02&rand_num=38960514677&reason=1&ts=1602228585
+
+func TestName(t *testing.T) {
+	fmt.Println(29867 ^ xorNum)
+	formatInt := strconv.FormatInt(29867^xorNum, 2)
+	fmt.Println(formatInt)
+	fmt.Printf("%019s\n",formatInt)
+	fmt.Printf("%019b\n",29867 ^ xorNum)
+}
